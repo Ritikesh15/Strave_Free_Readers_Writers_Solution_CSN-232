@@ -16,7 +16,7 @@ This problem subdues the shortcomings of the above two starvation problems and h
 Firrstly, we will start with designing a Semaphore which will preserves the first in first out(FIFO) order when locking and releasing the processes. Semaphore uses a FIFO queue to maintain the list of blocked processes.
 
 ```cpp
-//FIFO semaphore.
+// FIFO semaphore.
 struct Semaphore{
   int value = 1;
   FifoQueue* que = new FifoQueue();
@@ -26,7 +26,7 @@ void wait(Semaphore *S,int* processId){
   S->value--;
   if(S->value < 0){
   S->que->push(processId);
-  block(); //blocks the process by using a system call and then transfers it to the waiting queue. The process remains in the waiting queue until its waken up by the wakeup() system call
+  block(); // blocks the process by using a system call and then transfers it to the waiting queue. The process remains in the waiting queue until its waken up by the wakeup() system call
   }
 }
     
@@ -34,16 +34,16 @@ void signal(Semaphore *S){
   S->value++;
   if(S->value <= 0){
   int* PID = S->que->pop();
-  wakeup(PID); //wakes up the process with the given pid using system calls
+  wakeup(PID); // wakes up the process with the given pid using system calls
   }
 }
 
-//The queue allowing us to make a FIFO semaphore.
+// The queue allowing us to make a FIFO semaphore.
 struct FifoQueue{
     ProcessBlock* front, rear;
     int* pop(){
         if(front == NULL){
-            return -1;            // Error -> underflow.
+            return -1; // Error -> underflow.
         }
         else{
             int* val = front->value;
@@ -60,14 +60,12 @@ struct FifoQueue{
         blk->value = val;
         if(rear == NULL){
             front = rear = n;
-            
         }
         else{
             rear->next = blk;
             rear = blk;
         }
     }
-    
 }
 
 // A Process Block.
@@ -115,6 +113,7 @@ void read(){
     signal(readMutex); // releasing the mutex as the count is updated
 }
 
+// Writer's code
 void write(){
 
     // ENTRY SECTION
@@ -145,3 +144,4 @@ Thus, by this algorithm, we have successfully solved the problem.
 
 ## References
 - Abraham Silberschatz, Peter B. Galvin, Greg Gagne - Operating System Concepts
+- [Wikipedia](https://en.wikipedia.org/wiki/Readers%E2%80%93writers_problem)
